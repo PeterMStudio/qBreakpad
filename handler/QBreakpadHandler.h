@@ -22,6 +22,7 @@
 
 #include <QString>
 #include <QUrl>
+#include <functional>
 #include "singletone/singleton.h"
 
 namespace google_breakpad {
@@ -30,6 +31,7 @@ namespace google_breakpad {
 }
 
 class QBreakpadHandlerPrivate;
+typedef std::function<void(bool,QString)> CrashCB; // bool -> successed, QString -> crashPath
 
 class QBreakpadHandler: public QObject
 {
@@ -46,6 +48,8 @@ public:
 
     void setDumpPath(const QString& path);
     void setUploadUrl(const QUrl& url);
+
+    void setCrashCB(CrashCB p);
 
 public slots:
     void sendDumps();

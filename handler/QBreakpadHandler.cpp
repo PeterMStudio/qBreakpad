@@ -73,7 +73,8 @@ bool DumpCallback(const google_breakpad::MinidumpDescriptor& descriptor,
 #else
     qDebug("%s, dump path: %s\n", succeeded ? "Succeed to write minidump" : "Failed to write minidump", descriptor.path());
 #endif
-
+    auto cb = QBreakpadInstance.getCrashCB();
+    if(cb) cb(succeeded,path);
     return succeeded;
 }
 
@@ -83,6 +84,7 @@ public:
     google_breakpad::ExceptionHandler* pExptHandler;
     QString dumpPath;
     QUrl uploadUrl;
+    CrashCB cb = nullptr;
 };
 
 //------------------------------------------------------------------------------
@@ -161,6 +163,15 @@ void QBreakpadHandler::setUploadUrl(const QUrl &url)
         return;
 
     d->uploadUrl = url;
+}
+
+
+void QBreakpadHandler::setCrashCB(CrashCB p){
+    d->cb = p;
+}
+
+CrashCB QBreakpadHandler::getCrashCB(){
+    return d->cb;
 }
 
 void QBreakpadHandler::sendDumps()
